@@ -35,9 +35,7 @@ function calculateWinner(squares) {
 
 function Board({ turnX, squares, onPlay }) {
 
-	//const [squares, setSquares] = useState(Array(9).fill(null))
-
-
+	
 	function handleClick(i) {
 		if (squares[i] || calculateWinner(squares)) {
 			return;
