@@ -33,22 +33,20 @@ function calculateWinner(squares) {
 	return null;
 }
 
-export default function Board() {
+function Board({ turnX, squares, onPlay }) {
 
-	const [squares, setSquares] = useState(Array(9).fill(null))
-	const [turnX, setTurnX] = useState(true)
+	//const [squares, setSquares] = useState(Array(9).fill(null))
+
 
 	function handleClick(i) {
 		if (squares[i] || calculateWinner(squares)) {
 			return;
-		} else {
-			const nextSquares = squares.slice();
-			const turn = turnX
-			if (turn) { nextSquares[i] = "X" } else { nextSquares[i] = "O" }
-
-			setTurnX(!turn);
-			setSquares(nextSquares);
 		}
+		const nextSquares = squares.slice();
+		const turn = turnX
+		if (turn) { nextSquares[i] = "X" } else { nextSquares[i] = "O" }
+
+		onPlay(nextSquares);
 	}
 
 	const winner = calculateWinner(squares)
@@ -56,7 +54,7 @@ export default function Board() {
 	if (winner) {
 		status = "The winner is: " + winner
 	} else {
-		status = "Turn: " + turnX
+		status = "Turn: " + (turnX ? 'X' : 'O');
 	}
 
 	return (
@@ -79,5 +77,37 @@ export default function Board() {
 				<Square value={squares[8]} onSquareClick={() => handleClick(8)} />
 			</div>
 		</>
+	);
+}
+
+export default function Game() {
+
+	const [turnX, setTurnX] = useState(true)
+	const [history, setHistory] = useState([Array(9).fill(null)])
+	const currentSquares = history[history.length - 1]
+
+	function handlePlay(nextSquares) {
+		setHistory([...history, nextSquares])
+		setTurnX(!turnX);
+	}
+
+	const moves = history.map((squares, i) => {
+		return (
+		<li><button
+			key={squares.indexOf}
+			value={i}>Mossa n. {i}</button>
+		</li> 
+		)
+	})
+
+	return (
+		<div className='game'>
+			<div className='game-board'>
+				<Board turnX={turnX} squares={currentSquares} onPlay={handlePlay} />
+			</div>
+			<div className='game-info'>
+				<ol>{moves}</ol>
+			</div>
+		</div>
 	);
 }
